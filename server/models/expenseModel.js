@@ -28,4 +28,6 @@ const expenseSchema = mongoose.Schema({
     timestamps : true
 })
 
-export default mongoose.model("Expense", expenseSchema)
+const Expense = mongoose.model("Expense", expenseSchema)
+
+export default  Expense

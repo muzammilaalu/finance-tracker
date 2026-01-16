@@ -4,9 +4,10 @@ import User from "../models/userModel.js"
 const authUser = async(req,res,next) => {
     try {
         if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-            let token = headers.authorization.split(" ")[1]
+            let token = req.headers.authorization.split(" ")[1]
             let decoded = jwt.verify(token, process.env.JWT_SECRET)
-            const user = await User.findOne(decoded.id).select("-password")
+            const user = await User.findById(decoded.id).select("-password")
+
             req.user = user
             next()
         }else{

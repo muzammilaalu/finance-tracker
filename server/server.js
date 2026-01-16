@@ -5,6 +5,7 @@ import connectDb from './config/dbConfig.js'
 import errorHandler from './middleware/errorHandler.js'
 import authRoute from "./routes/authRoute.js"
 import incomeRoute from "./routes/incomeRoute.js"
+import expenseRoute from "./routes/expenseRoute.js"
 
 
 const app = express()
@@ -30,5 +31,8 @@ connectDb()
 
   //for income
   app.use("/api/income", incomeRoute)
+
+  //for expense
+  app.use("/api/expense", expenseRoute)
 
 app.listen(PORT, () => console.log(`SERVER IS RUNNING AT ${PORT}`))
