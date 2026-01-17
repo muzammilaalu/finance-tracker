@@ -7,5 +7,6 @@ import incomeController from "../controllers/incomeController.js"
 const routes = express.Router()
 
 routes.post("/add", protect.authUser, incomeController.addIncome )
+routes.get("/all", protect.authUser, incomeController.getIncome )
 
 export default routes

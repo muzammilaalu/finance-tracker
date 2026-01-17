@@ -1,38 +1,45 @@
-import express, { json } from 'express'
-import connectDb from './config/dbConfig.js'
+import express from "express";
+import connectDb from "./config/dbConfig.js";
 
-//local import
-import errorHandler from './middleware/errorHandler.js'
-import authRoute from "./routes/authRoute.js"
-import incomeRoute from "./routes/incomeRoute.js"
-import expenseRoute from "./routes/expenseRoute.js"
+// local imports
+import errorHandler from "./middleware/errorHandler.js";
+import authRoute from "./routes/authRoute.js";
+import incomeRoute from "./routes/incomeRoute.js";
+import expenseRoute from "./routes/expenseRoute.js";
+import summaryRoute from "./routes/summaryRoute.js";
+import loanRoute from "./routes/loanRoute.js";
+import aiRoute from "./routes/aiRoute.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 
-const app = express()
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000
+connectDb();
 
-connectDb()
+// ✅ BODY PARSERS (VERY IMPORTANT – FIRST)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  app.get('/', (req, res) => {
-    res.json({
-       message:  'welcome to Finance Tracker API 1.00 😉 '
-    })
-  })
+// ✅ TEST ROUTE
+app.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to Finance Tracker API 1.0 😉",
+  });
+});
 
-  app.use(express.json())
-  app.use(express.urlencoded())
+// ✅ ROUTES
+app.use("/api/auth", authRoute);
+app.use("/api/income", incomeRoute);
+app.use("/api/expense", expenseRoute);
+app.use("/api/summary", summaryRoute);
+app.use("/api/loan", loanRoute);
+app.use("/api/ai", aiRoute);
 
-  //for error handle
-  app.use(errorHandler)
+// ✅ ERROR HANDLER (ALWAYS LAST)
+app.use(errorHandler);
 
-  //for auth user
-  app.use("/api/auth",authRoute)
-
-  //for income
-  app.use("/api/income", incomeRoute)
-
-  //for expense
-  app.use("/api/expense", expenseRoute)
-
-app.listen(PORT, () => console.log(`SERVER IS RUNNING AT ${PORT}`))
+app.listen(PORT, () =>
+  console.log(`SERVER IS RUNNING AT ${PORT}`)
+);

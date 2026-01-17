@@ -9,11 +9,14 @@ const addIncome = async(req, res) => {
         throw new Error("Amout is required !")
     }
 
+    const incomeDate = date ? new Date(date) : new Date();
+        incomeDate.setHours(0, 0, 0, 0);
+
     const newIncome = await Income.create({
         user: req.user,
         source,
         amount,
-        date : date || new Date(),
+        date : incomeDate,
     })
 
     if(newIncome){
@@ -24,6 +27,16 @@ const addIncome = async(req, res) => {
     }
 }
 
-const incomeController = {addIncome}
+const getIncome = async(req,res) => {
+    try {
+        const incomes = await Income.find({user : req.user}).sort({date: -1})
+        res.status(200).json(incomes)
+    } catch (error) {
+        res.status(404)
+        throw new Error("Failed to fetch incomes")
+    }
+}
+
+const incomeController = {addIncome, getIncome}
 
 export default incomeController

@@ -19,6 +19,10 @@ const loanSchema = mongoose.Schema({
         type: Number,
         require: true
     },
+    emiAmount: {
+      type: Number,
+      required: true
+    },
      tenureMonths: {
       type: Number,
       required: true
@@ -31,4 +35,6 @@ const loanSchema = mongoose.Schema({
     timestamps:  true
 })
 
-export default mongoose.model("Loan", loanSchema)
+const Loan = mongoose.model("Loan", loanSchema)
+
+export default Loan

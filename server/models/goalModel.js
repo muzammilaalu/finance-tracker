@@ -1,31 +1,37 @@
-import { current } from "@reduxjs/toolkit";
 import mongoose from "mongoose";
 
-
-const goalSchema = mongoose.Scgema({
+const goalSchema = new mongoose.Schema(
+  {
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        require: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     title: {
-        type : String,
-        require: true
+      type: String,
+      required: true,
     },
     targetAmount: {
-        type: Number,
-        require: true
+      type: Number,
+      required: true,
     },
-    monthlySaving : {
-        type: Number,
-        require: true
+    savedAmount: {
+      type: Number,
+      default: 0,
     },
-    currentAmount: {
-        type: Number,
-        default: 0
-    }
-},{
-    timestamps: true
-})
+    deadlineMonths: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["active", "completed"],
+      default: "active",
+    },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model("Goal", goalSchema)
+const Goal =  mongoose.model("Goal", goalSchema)
+
+export default Goal
