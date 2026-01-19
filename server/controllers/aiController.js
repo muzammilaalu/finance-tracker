@@ -1,4 +1,5 @@
 import Expense from "../models/expenseModel.js";
+import Goal from "../models/goalModel.js";
 import Income from "../models/incomeModel.js";
 import Loan from "../models/loanModel.js";
 import askGemini from "../utils/geminiAI.js"
@@ -15,9 +16,7 @@ import askGemini from "../utils/geminiAI.js"
     const incomes = await Income.find({ user: userId });
     const expenses = await Expense.find({ user: userId });
     const loans = await Loan.find({ user: userId });
-    console.log(incomes)
-    console.log(expenses)
-    console.log(loans)
+    
 
     const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
     const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -74,6 +73,61 @@ ${loans.length > 0 ? JSON.stringify(loans, null, 2) : "No loans"}
   }
 };
 
-const aiController = { miniCAChatbot }
+const smartGoalAdvice = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    // get user goals
+    const goals = await Goal.find({ user: req.user });
+
+    if (goals.length === 0) {
+      return res.status(200).json({
+        response: "Aapne koi goal add nahi kiya hai. Pehle goal create karo fir mai advice dunga 🙂"
+      });
+    }
+
+    // Convert goals into AI-readable format
+    const goalsInfo = goals.map((g) => {
+      const monthlySaving = Math.ceil((g.targetAmount - g.savedAmount) / g.deadlineMonths);
+      return `
+Goal: ${g.title}
+Target: ₹${g.targetAmount}
+Saved: ₹${g.savedAmount}
+Deadline: ${g.deadlineMonths} months
+Required Monthly Saving: ₹${monthlySaving}
+Status: ${g.status}
+`;
+    }).join("\n");
+
+    // AI Prompt
+    const aiPrompt = `
+You are Mini-CA, an Indian financial advisor.
+User asked: "${message}"
+
+Here are the user's goals:
+
+${goalsInfo}
+
+Give smart, friendly, practical advice.
+Simplify language like a big brother.
+Suggest improvements if needed.
+`;
+
+    const aiResponse = await askGemini(aiPrompt);
+
+    res.status(200).json({
+      message: "Goal-based AI advice generated",
+      response: aiResponse
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "AI goal advice failed",
+      error: error.message
+    });
+  }
+};
+
+const aiController = { miniCAChatbot, smartGoalAdvice }
 
 export default aiController

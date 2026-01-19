@@ -1,5 +1,6 @@
 import express from "express";
 import connectDb from "./config/dbConfig.js";
+import dotenv from "dotenv";
 
 // local imports
 import errorHandler from "./middleware/errorHandler.js";
@@ -9,7 +10,9 @@ import expenseRoute from "./routes/expenseRoute.js";
 import summaryRoute from "./routes/summaryRoute.js";
 import loanRoute from "./routes/loanRoute.js";
 import aiRoute from "./routes/aiRoute.js";
-import dotenv from "dotenv";
+import goalRoute from "./routes/goalRoute.js"
+import budgetRoute from "./routes/budgetRouter.js"
+import feedRoute from "./routes/feedRoute.js"
 dotenv.config();
 
 
@@ -36,6 +39,9 @@ app.use("/api/expense", expenseRoute);
 app.use("/api/summary", summaryRoute);
 app.use("/api/loan", loanRoute);
 app.use("/api/ai", aiRoute);
+app.use("/api/goal", goalRoute)
+app.use("/api/budget", budgetRoute)
+app.use("/api/feed", feedRoute)
 
 // ✅ ERROR HANDLER (ALWAYS LAST)
 app.use(errorHandler);
