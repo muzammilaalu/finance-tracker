@@ -4,7 +4,6 @@ import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../feature/auth/authSlice';
 import { toast } from 'react-toastify';
-import Loader from '../components/LoadingScreen';
 import LoadingScreen from '../components/LoadingScreen';
 
 function Login() {

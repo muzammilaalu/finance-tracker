@@ -1,4 +1,4 @@
-function MonthlySummaryChart() {
+function MonthlySummaryChart({totalExpense}) {
   const monthlyData = [
     { month: 'Jan', income: 80, expense: 60 },
     { month: 'Feb', income: 65, expense: 75 },

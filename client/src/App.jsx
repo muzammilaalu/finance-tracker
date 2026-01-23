@@ -7,6 +7,8 @@ import Goals from './pages/Goals';
 import Budget from './pages/Budget';
 import Layout from './components/layout/Layout';
 import { ToastContainer } from 'react-toastify';
+import IncomePage from './pages/IncomePage';
+import ExpensePage from './pages/ExpensePage';
 
 function App() {
 
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/feed" element={<Feed />} />
                 <Route path="/goals" element={<Goals />} />
                 <Route path="/budget" element={<Budget />} />
+                <Route path="/income-page" element={<IncomePage />} />
+                <Route path="/expense-page" element={<ExpensePage />} />
               </Routes>
             </Layout>
           }
