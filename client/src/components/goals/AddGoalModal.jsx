@@ -1,30 +1,28 @@
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useDispatch } from 'react-redux';
+import { addGoals } from '../../feature/goal/goalSlice';
 
 function AddGoalModal({ isOpen, onClose, onAddGoal }) {
+
+  const dispatch = useDispatch()
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    target: '',
-    current: '0',
-    deadline: '',
+    title: "",
+    targetAmount: "",
+    deadlineMonths: "",
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAddGoal({
-      ...formData,
-      target: parseFloat(formData.target),
-      current: parseFloat(formData.current),
-      completed: false,
-    });
+    dispatch(addGoals(formData))
+
+   console.log('submited', formData)
     setFormData({
-      name: '',
-      description: '',
-      target: '',
-      current: '0',
-      deadline: '',
+      title: "",
+      targetAmount: "",
+      deadlineMonths: "",
     });
+
     onClose();
   };
 
@@ -39,116 +37,153 @@ function AddGoalModal({ isOpen, onClose, onAddGoal }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose} />
+      <div className="flex items-center justify-center min-h-screen px-4 py-8 text-center sm:p-0">
 
-        <div className="relative inline-block w-full max-w-lg p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
+        {/* Background */}
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+          onClick={onClose}
+        />
+
+        {/* Modal */}
+        <div className="
+          relative 
+          inline-block 
+          w-full max-w-lg 
+          p-6 my-8 
+          overflow-hidden 
+          text-left 
+          align-middle 
+          transition-all 
+          transform 
+          bg-white dark:bg-gray-900 
+          shadow-2xl 
+          rounded-2xl
+          animate-scaleUp
+        ">
+
+          {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Goal</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Add New Goal
+            </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+              className="text-gray-400 hover:text-gray-200 dark:hover:text-gray-300 transition"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <XMarkIcon className="h-7 w-7" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* GOAL TITLE */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Goal Name
+              <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 block">
+                Goal Title
               </label>
               <input
-                id="name"
-                name="name"
+                name="title"
                 type="text"
                 required
-                value={formData.name}
+                value={formData.title}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                placeholder="e.g., Emergency Fund"
+                className="
+                  w-full px-4 py-3 
+                  rounded-xl 
+                  bg-gray-100 dark:bg-gray-800 
+                  border border-gray-300 dark:border-gray-700 
+                  text-gray-900 dark:text-white 
+                  focus:ring-2 focus:ring-blue-500
+                  transition
+                "
+                placeholder="e.g. Buy iPhone"
               />
             </div>
 
+            {/* TARGET AMOUNT */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows="3"
-                value={formData.description}
-                onChange={handleChange}
-                className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                placeholder="What is this goal for?"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="target" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Target Amount
-                </label>
-                <input
-                  id="target"
-                  name="target"
-                  type="number"
-                  required
-                  value={formData.target}
-                  onChange={handleChange}
-                  className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                  placeholder="10000"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="current" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Current Amount
-                </label>
-                <input
-                  id="current"
-                  name="current"
-                  type="number"
-                  required
-                  value={formData.current}
-                  onChange={handleChange}
-                  className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Target Date
+              <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 block">
+                Target Amount (₹)
               </label>
               <input
-                id="deadline"
-                name="deadline"
-                type="date"
+                name="targetAmount"
+                type="number"
                 required
-                value={formData.deadline}
+                value={formData.targetAmount}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
+                className="
+                  w-full px-4 py-3 
+                  rounded-xl 
+                  bg-gray-100 dark:bg-gray-800 
+                  border border-gray-300 dark:border-gray-700 
+                  text-gray-900 dark:text-white 
+                  focus:ring-2 focus:ring-blue-500
+                  transition
+                "
+                placeholder="70000"
               />
             </div>
 
-            <div className="flex gap-3 mt-6">
+            {/* DEADLINE MONTHS */}
+            <div>
+              <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 block">
+                Deadline (Months)
+              </label>
+              <input
+                name="deadlineMonths"
+                type="number"
+                required
+                value={formData.deadlineMonths}
+                onChange={handleChange}
+                className="
+                  w-full px-4 py-3 
+                  rounded-xl 
+                  bg-gray-100 dark:bg-gray-800 
+                  border border-gray-300 dark:border-gray-700 
+                  text-gray-900 dark:text-white 
+                  focus:ring-2 focus:ring-blue-500
+                  transition
+                "
+                placeholder="12"
+              />
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-4 pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                className="
+                  flex-1 py-3 
+                  rounded-xl 
+                  border border-gray-300 dark:border-gray-700 
+                  text-gray-700 dark:text-gray-300 
+                  hover:bg-gray-200 dark:hover:bg-gray-700 
+                  transition
+                "
               >
                 Cancel
               </button>
+
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                className="
+                  flex-1 py-3 
+                  rounded-xl 
+                  bg-gradient-to-r from-blue-600 to-indigo-600 
+                  text-white 
+                  font-semibold 
+                  shadow-lg shadow-blue-300/20 
+                  hover:opacity-90 
+                  transition
+                "
               >
                 Add Goal
               </button>
             </div>
+
           </form>
         </div>
       </div>

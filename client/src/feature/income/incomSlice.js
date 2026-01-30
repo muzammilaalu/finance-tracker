@@ -33,6 +33,24 @@ const incomSlice = createSlice({
             state.isIncomeError = true
             state.isIncomeErrorMessage = action.payload
         })
+
+        .addCase(addIncomes.pending, (state, action) => {
+            state.isIncomeError = false
+            state.isIcomeSuccess = false
+            state.isIncomeLoading = true
+        })
+        .addCase(addIncomes.fulfilled, (state, action) => {
+            state.isIcomeSuccess = true
+            state.income = [action.payload, ...state.totalIncome]
+            state.isIncomeError = false
+            state.isIncomeLoading = false
+        })
+        .addCase(addIncomes.rejected, (state, action) => {
+            state.isIcomeSuccess = false
+            state.isIncomeLoading = false
+            state.isIncomeError = true
+            state.isIncomeErrorMessage = action.payload
+        })
   }
 });
 
@@ -44,6 +62,16 @@ export const getIncome = createAsyncThunk('GET/INCOME', async(_, thunkAPI) => {
     let token = thunkAPI.getState().auth.user.token
     try {
         return await incomeService.incomeGet(token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const addIncomes = createAsyncThunk('ADD/INCOME', async(formData, thunkAPI) => {
+    let token = thunkAPI.getState().auth.user.token
+    try {
+        return await incomeService.incomeAdd(token, formData)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)

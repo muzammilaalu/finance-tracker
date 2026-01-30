@@ -20,6 +20,7 @@ import { getIncome } from '../feature/income/incomSlice';
 import LoadingScreen from '../components/LoadingScreen';
 import { getExpense } from '../feature/expense/expenseSlice';
 import AddExpense from '../components/expense/AddExpense';
+import MiniCAChat from '../components/Mini-CA-AI/MiniCAChat';
 
 
 
@@ -27,10 +28,11 @@ function Dashboard() {
 
   const { user } = useSelector(state => state.auth)
   const { totalExpense, isExpenseError, isExpenseErrorMessage, isExpenseSuccess, isExpenseLoading } = useSelector(state => state.expense)
-  const { totalIncome, isIncomeError, isIncomeLoading, isIncomeErrorMessage } = useSelector(state => state.income)
+  const { totalIncome, isIncomeError, isIncomeLoading, isIncomeErrorMessage, isIcomeSuccess } = useSelector(state => state.income)
 
   const [isIncome, setIsIncome] = useState(false)
   const [isExpense, setIsExpense] = useState(false)
+  const [isAiOpen, setIsAiOpen] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -44,11 +46,15 @@ function Dashboard() {
       case "expense":
         setIsExpense(isExpense ? false : true);
         break;
+      case "ai":
+        setIsAiOpen(isAiOpen ? false : true)
+
 
       default:
         break;
     }
   };
+
 
 
   useEffect(() => {
@@ -62,10 +68,14 @@ function Dashboard() {
     }
 
 
+
     if (isIncomeError && isIncomeErrorMessage) {
       toast.error(isIncomeErrorMessage, { position: "top-center" })
     }
-  }, [user, isIncomeError, isIncomeErrorMessage])
+    if (isExpenseError && isExpenseErrorMessage) {
+      toast.error(isExpenseErrorMessage, { position: "top-center" })
+    }
+  }, [user, isIncomeError, isIncomeErrorMessage, isExpenseError, isExpenseErrorMessage])
 
   if (isIncomeLoading) {
     return (
@@ -74,17 +84,22 @@ function Dashboard() {
   }
 
   const totalIncomeAmount = totalIncome.reduce(
-    (sum, item) => sum + (item.amount || 0),
+    (sum, item) => sum + (item?.amount || 0),
     0
   );
 
   const totalExpenseAmount = totalExpense?.reduce((sum, item) => sum + (item.amount || 0), 0)
+  let savingMoney = totalIncomeAmount - totalExpenseAmount
+ 
 
+  if (isIcomeSuccess) {
+    toast.success(isIncomeErrorMessage, { position: 'top-left' })
+  }
 
 
   return (
     <>
-      <div className={`${isIncome || isExpense ? "blur" : "space-y-6"}`}>
+      <div className={`${isIncome || isExpense || isAiOpen ? "blur" : "space-y-6"}`}>
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">Welcome back! Here's your financial overview</p>
@@ -117,7 +132,7 @@ function Dashboard() {
           </Link>
           <StatsCard
             title="Savings"
-            amount="$4,130"
+            amount={`₹${savingMoney}`}
             change="+18.3% from last month"
             changeType="positive"
             icon={CurrencyDollarIcon}
@@ -145,33 +160,48 @@ function Dashboard() {
               bgColor="bg-rose-100 dark:bg-rose-900/30"
               textColor="text-rose-700 dark:text-rose-400"
             />
+            
             <QuickActionButton
               label="Ask Mini-CA"
               icon={SparklesIcon}
+              value = 'ai'
               onClick={() => handleQuickAction('ai')}
               bgColor="bg-blue-100 dark:bg-blue-900/30"
               textColor="text-blue-700 dark:text-blue-400"
             />
-            <QuickActionButton
-              label="Set Goals"
-              icon={FlagIcon}
-              onClick={() => handleQuickAction('goals')}
-              bgColor="bg-amber-100 dark:bg-amber-900/30"
-              textColor="text-amber-700 dark:text-amber-400"
-            />
+           
+              <QuickActionButton
+                label="Set Goals"
+                icon={FlagIcon}
+                onClick={() => handleQuickAction('goals')}
+                bgColor="bg-amber-100 dark:bg-amber-900/30"
+                textColor="text-amber-700 dark:text-amber-400"
+              />
           </div>
         </div>
 
 
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
-          <MonthlySummaryChart totalExpense = {totalExpense}/>
-          <CategoryPieChart totalExpense = {totalExpense}/>
+          <MonthlySummaryChart 
+    expenses={totalExpense} 
+    incomes={totalIncome} 
+/>
+
+          <CategoryPieChart totalExpense={totalExpense} />
         </div>
 
       </div>
-      <AddIncome isIncome={isIncome} />
-      <AddExpense isExpense = {isExpense}/>
+      {
+        isIncome && <AddIncome handleQuickAction={handleQuickAction} isIncome={isIncome} />
+      }
+
+      {
+        isExpense && <AddExpense handleQuickAction={handleQuickAction} />
+      }
+      {
+        isAiOpen && <MiniCAChat handleQuickAction = {handleQuickAction} />
+      }
     </>
   );
 }

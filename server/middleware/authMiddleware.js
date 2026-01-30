@@ -10,7 +10,7 @@ const authUser = async(req,res,next) => {
 
             req.user = user
             next()
-        }else{
+        }else{  
             res.status(400)
             throw new Error("Unauthorized Access: Valid token needed")
         }

@@ -1,31 +1,60 @@
-function MonthlySummaryChart({totalExpense}) {
-  const monthlyData = [
-    { month: 'Jan', income: 80, expense: 60 },
-    { month: 'Feb', income: 65, expense: 75 },
-    { month: 'Mar', income: 90, expense: 55 },
-    { month: 'Apr', income: 75, expense: 70 },
-    { month: 'May', income: 85, expense: 65 },
-    { month: 'Jun', income: 95, expense: 60 },
-  ];
+import React from "react";
+
+function MonthlySummaryChart({ expenses = [], incomes = [] }) {
+  // ---- 1. Monthly totals ----
+  const monthlyExpense = Array(12).fill(0);
+  expenses.forEach((exp) => {
+    const m = new Date(exp.date).getMonth();
+    monthlyExpense[m] += exp.amount;
+  });
+
+  const monthlyIncome = Array(12).fill(0);
+  incomes.forEach((inc) => {
+    const m = new Date(inc.date).getMonth();
+    monthlyIncome[m] += inc.amount;
+  });
+
+  // ---- 2. Auto scaling ----
+  const maxVal = Math.max(...monthlyExpense, ...monthlyIncome, 1);
+  const scaleFactor = 300 / maxVal; // 300px max height
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  const monthlyData = months.map((m, i) => ({
+    month: m,
+    incomeHeight: monthlyIncome[i] * scaleFactor,
+    expenseHeight: monthlyExpense[i] * scaleFactor,
+  }));
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md shadow-blue-100 dark:shadow-none p-6">
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Monthly Summary</h3>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+        Monthly Summary
+      </h3>
 
       <div className="flex items-end justify-between gap-4 h-64">
-        {monthlyData.map((data) => (
-          <div key={data.month} className="flex-1 flex flex-col items-center gap-2">
-            <div className="w-full flex flex-col items-center gap-1">
+        {monthlyData.map((data, index) => (
+          <div key={index} className="flex-1 flex flex-col items-center gap-2">
+            
+            <div className="w-full flex  items-end gap-1">
+              
+              {/* Income Bar */}
               <div
-                className="w-full bg-emerald-500 rounded-t-lg transition-all hover:bg-emerald-600"
-                style={{ height: `${data.income}%` }}
-              />
+                className="w-2 bg-emerald-500 rounded-t hover:bg-emerald-600"
+                style={{ height: `${data.incomeHeight-100}px` }}
+                ></div>
+
+              {/* Expense Bar */}
               <div
-                className="w-full bg-rose-500 rounded-t-lg transition-all hover:bg-rose-600"
-                style={{ height: `${data.expense}%` }}
-              />
+                className="w-2 bg-rose-500 rounded-t hover:bg-rose-600"
+                style={{ height: `${data.expenseHeight}px` }}
+               
+              ></div>
             </div>
-            <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{data.month}</span>
+
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {data.month}
+            </span>
           </div>
         ))}
       </div>
@@ -33,11 +62,12 @@ function MonthlySummaryChart({totalExpense}) {
       <div className="flex items-center justify-center gap-6 mt-6">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 bg-emerald-500 rounded-full" />
-          <span className="text-sm text-gray-600 dark:text-gray-400">Income</span>
+          <span>Income</span>
         </div>
+
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 bg-rose-500 rounded-full" />
-          <span className="text-sm text-gray-600 dark:text-gray-400">Expense</span>
+          <span>Expense</span>
         </div>
       </div>
     </div>

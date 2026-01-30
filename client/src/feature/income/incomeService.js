@@ -11,7 +11,18 @@ const incomeGet = async(token) => {
     return response.data
 }
 
-const incomeService = { incomeGet } 
+const incomeAdd = async(token, formData) => {
+    let options = {
+        headers : {
+            authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.post('api/income/add', formData, options)
+    console.log(response)
+
+}
+
+const incomeService = { incomeGet, incomeAdd } 
 
 export default incomeService
 

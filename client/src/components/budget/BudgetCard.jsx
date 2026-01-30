@@ -31,7 +31,7 @@ function BudgetCard({ category, allocated, spent, icon: Icon }) {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{category}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              ${spent.toLocaleString()} / ${allocated.toLocaleString()}
+              ₹{spent.toLocaleString()} / ₹{allocated.toLocaleString()}
             </p>
           </div>
         </div>
@@ -51,7 +51,7 @@ function BudgetCard({ category, allocated, spent, icon: Icon }) {
         <div className="flex items-center justify-between text-sm">
           <span className={getStatusColor()}>{percentage.toFixed(1)}% Used</span>
           <span className="text-gray-600 dark:text-gray-400">
-            ${(allocated - spent).toLocaleString()} Remaining
+            ₹{(allocated - spent).toLocaleString()} Remaining
           </span>
         </div>
       </div>

@@ -1,11 +1,15 @@
-import { Send } from 'lucide-react';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Delete, Send } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addExpense } from '../../feature/expense/expenseSlice';
+import { toast } from 'react-toastify';
+import LoadingScreen from '../LoadingScreen';
 
-export default function AddExpense({ isExpense }) {
+export default function AddExpense({ handleQuickAction }) {
 
   const dispatch = useDispatch()
+  const {  isExpenseError, isExpenseErrorMessage, isExpenseSuccess, isExpenseLoading } = useSelector(state => state.expense)
+  
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +20,10 @@ export default function AddExpense({ isExpense }) {
   })
 
   const { amount, category, date, note } = formData
+
+  const handleExpens = () => {
+    handleQuickAction("expense")
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -35,11 +43,23 @@ export default function AddExpense({ isExpense }) {
       date: "",
       note: ""
     })
-    isExpense = false
+    handleExpens()
+    
   };
 
+  // useEffect(() => {
+  //   if(isExpenseError && isExpenseErrorMessage)
+  //     toast.error(isExpenseErrorMessage, {position: "top-center"})
+  // }, [isExpenseError, isExpenseErrorMessage])
+
+  if(isExpenseLoading){
+    return(
+      <LoadingScreen loadingMessage='Data Adding...'/>
+    )
+  }
+
   return (
-    <div className={`${isExpense ? "min-h-screen z-2 w-[80%] absolute top-20 right-30 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6" : "hidden"}`}>
+    <div className={` "min-h-screen z-2 w-[80%] absolute top-20 right-30 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6" }`}>
       <div className="max-w-2xl mx-auto">
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-sm p-8">
           <h1 className="text-3xl font-bold text-white mb-2">Add Expense</h1>
@@ -116,11 +136,29 @@ export default function AddExpense({ isExpense }) {
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  Add Income
+                  Add Expense
                 </>
               )}
             </button>
+          
           </form>
+           <button
+            onClick={handleExpens}
+              disabled={isSubmitting}
+              className="w-full mt-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/50 disabled:opacity-75 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Canceling...
+                </>
+              ) : (
+                <>
+                  <Delete className="w-5 h-5" />
+                  Cancel
+                </>
+              )}
+            </button>
 
         </div>
       </div>

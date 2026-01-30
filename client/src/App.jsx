@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import IncomePage from './pages/IncomePage';
 import ExpensePage from './pages/ExpensePage';
 
+
 function App() {
 
   return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/income-page" element={<IncomePage />} />
                 <Route path="/expense-page" element={<ExpensePage />} />
+                
               </Routes>
             </Layout>
           }

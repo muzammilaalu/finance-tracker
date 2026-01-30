@@ -23,6 +23,7 @@ User Data:
 - Monthly Income: ₹${totalIncome}
 - Monthly Expense: ₹${totalExpense}
 - Monthly Saving: ₹${saving}
+
 - Goals: ${goals.map(g => g.title + " (Target ₹" + g.targetAmount + ")").join(", ")}
 
 Feed Rules:
@@ -52,34 +53,31 @@ Correct JSON Format:
 ]
     `;
 
-    // AI RESPONSE
-    const aiFeed = await askGemini(prompt);
+    // ============================
+    // 🔥 AI RESPONSE FROM GEMINI
+    // ============================
 
-    // SAFE JSON PARSING
-    let parsedFeed;
+    const aiRaw = await askGemini(prompt);
 
+    // Safely parse JSON
+    let aiResponse;
     try {
-      parsedFeed = JSON.parse(aiFeed);
+      aiResponse = JSON.parse(aiRaw);
     } catch (err) {
-      console.log("❌ AI RAW RESPONSE:", aiFeed);
-
       return res.status(500).json({
         message: "AI returned invalid JSON",
-        raw: aiFeed,
+        raw: aiRaw
       });
     }
 
-    // SUCCESS RESPONSE
     return res.status(200).json({
-      message: "Personalized feed created",
-      feed: parsedFeed,
+      feed: aiResponse,
+
     });
 
   } catch (error) {
-    return res.status(500).json({
-      message: "Personalized feed failed",
-      error: error.message,
-    });
+    console.log(error);
+    return res.status(500).json({ message: "Server error in personalized feed" });
   }
 };
 

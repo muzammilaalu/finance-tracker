@@ -1,106 +1,127 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addIncomes } from "../../feature/income/incomSlice";
+import LoadingScreen from "../LoadingScreen";
 
-import FormInput from './FormInput';
+export default function addIncome({handleQuickAction, isIncome}) {
 
-import { DollarSign } from 'lucide-react';
+  const {  isIncomeError, isIncomeLoading, isIncomeErrorMessage, isIcomeSuccess } = useSelector(state => state.income)
+  const dispatch = useDispatch()
 
+  const handleIncome = () => {
+    handleQuickAction("income")
+    console.log("click")
+  }
 
-export default function AddIncome({isIncome}) {
   const [formData, setFormData] = useState({
-    source: '',
-    amount: '',
-    date: '',
-    note: ''
-  });
-
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-
+    source : "",
+    amount: "",
+    date: ""
+  })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData({
+      ...formData,
+      [e.target.name] : e.target.value
+    })
+  }
 
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch(addIncomes(formData))
+   
+    console.log(formData)
+
+    if(formData){
+      handleQuickAction("income") 
     }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("submitted")
-  
-  };
+     setFormData({
+    source : "",
+    amount: "",
+    date: ""
+    })
+  }
+
+  const {source, amount, date} = formData
+
+  if(isIncomeLoading){
+    return (
+      <LoadingScreen loadingMessage="data adding..."/>
+    )
+  }
 
   return (
-    <div className={`${isIncome ? "min-h-screen z-2 w-[80%] absolute top-20 right-30 bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-12 px-4" : "hidden"} `}>
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Add Income</h1>
-              <p className="text-sm text-gray-500">Track your income sources</p>
-            </div>
+    <div className= "min-h-screen z-2 w-[80%] absolute top-20 left-90 right-5 bg-gradient-to-br  p-6">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Add Income
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* SOURCE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Income Source
+            </label>
+            <select
+              name="source"
+              value={source}
+              onChange={handleChange}
+              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500"
+            >
+              <option >Select Source</option>
+              <option value="salary">Salary</option>
+              <option value="freelance">Freelance</option>
+              <option value="business">Business</option>
+              <option value="other">Other</option>
+            </select>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <FormInput
-              label="Source"
-              name="source"
-              type="text"
-              value={formData.source}
-              onChange={handleChange}
-              placeholder="e.g., Salary, Freelance, Investment"
-              error={errors.source}
-              required
-            />
-
-            <FormInput
-              label="Amount"
+          {/* AMOUNT */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Amount
+            </label>
+            <input
               name="amount"
+              value={amount}
+              onChange={handleChange}
               type="number"
-              value={formData.amount}
-              onChange={handleChange}
-              placeholder="0.00"
-              error={errors.amount}
-              required
-              isAmount
+              placeholder="₹ 0.00"
+              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500"
             />
+          </div>
 
-            <FormInput
-              label="Date"
+          {/* DATE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Date
+            </label>
+            <input
               name="date"
+              value={date}
+              onChange={handleChange}
               type="date"
-              value={formData.date}
-              onChange={handleChange}
-              error={errors.date}
-              required
+              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500"
             />
+          </div>
 
-            <FormInput
-              label="Note"
-              name="note"
-              value={formData.note}
-              onChange={handleChange}
-              placeholder="Add a note (optional)"
-              as="textarea"
-            />
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full cursor-pointer bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
-            >
-            Add 
-            </button>
-          </form>
-        </div>
+          {/* SUBMIT */}
+          <button
+            className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Submit Income
+          </button>
+        </form>
+        <button
+          onClick={handleIncome}
+            className="w-full bg-red-600 mt-4 text-white py-3 rounded-lg text-lg font-semibold hover:bg-red-700 transition"
+          >
+            Cancel
+          </button>
       </div>
-
-    
     </div>
   );
 }
